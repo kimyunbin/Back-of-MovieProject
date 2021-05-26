@@ -4,11 +4,8 @@ from . import views
 app_name = 'movies'
 
 urlpatterns = [
-    # path('', views.index, name='index'),
-    # path('<int:movie_pk>/', views.detail, name='detail'),
-    # path('tournament', views.tournament, name='tournament'),
-    path('', views.main),
-    path('detail/<int:movie_pk>', views.movie_detail),
-    path('tournament', views.tournament),
-    path('mypageMovie/<str:username>', views.mypageMovie)
+    path('', views.main), # 영화 메인 
+    path('detail/<int:movie_pk>', views.movie_detail), # 단일 영화 
+    path('tournament', views.tournament), # 영화 월드컵 
+    path('mypageMovie/<str:username>', views.mypageMovie) # 영화 월드컵 우승
 ]

@@ -23,10 +23,7 @@ def reviews(request):
     page = int(request.GET.get('page'))
     all_reviews = Review.objects.all().order_by('-created_at')
     p = Paginator(all_reviews, 4, allow_empty_first_page = True)
-    reviews = p.page(page)
-
-    #review = get_list_or_404(Review)
-    #reviewserializer = ReviewListSerializer(review, many=True)    
+    reviews = p.page(page)   
     reviewserializer = ReviewSerializer(data=reviews, many=True)
     print(reviewserializer.is_valid())
     return Response(reviewserializer.data)
@@ -58,7 +55,6 @@ def review_detail(request,review_id):
 @permission_classes([IsAuthenticated])
 def review_craeted(request,movie_id):
     movie = get_object_or_404(Movie,pk=movie_id)
-    # movie = Movie.objects.filter(id=movie_id)
     print(movie)
     serializer = ReviewSerializer(data =request.data)
     if serializer.is_valid(raise_exception=True):
@@ -76,7 +72,7 @@ def review_delete(request,review_id):
             'delete':f'데이터 {review_id}번 글이 삭제되었습니다.'
         }
         return Response(data,status=status.HTTP_204_NO_CONTENT)
-    return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return Response(data={'message':'해당 사용자만 삭제할 수 있습니다.'},status=status.HTTP_401_UNAUTHORIZED)
     
 @api_view(['post'])
 @authentication_classes([JSONWebTokenAuthentication])
@@ -100,7 +96,7 @@ def comment_delete(request,comment_id):
             'delete':f'데이터 {comment_id}번 글이 삭제되었습니다.'
         }
         return Response(data,status=status.HTTP_204_NO_CONTENT)
-    return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return Response(data={'message':'해당 사용자만 삭제할 수 있습니다.'},status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['post'])
 @authentication_classes([JSONWebTokenAuthentication])
