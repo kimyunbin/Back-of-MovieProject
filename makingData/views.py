@@ -4,13 +4,15 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 from django.contrib.auth import get_user_model
-from movies.models import Movie, Genre
+from movies.models import Movie, Genre, Tournament
 from movies.serializers import GenreSerializer
-from community.models import Review
+from community.models import Review, Comment
 
 import requests
 import logging, traceback
 import datetime
+import random
+from faker import Faker
 from django_seed import Seed
 
 # Create your views here.
@@ -83,13 +85,48 @@ def movie_data2(request) :
 # user, community 에 더미 데이터 넣기
 @api_view(['GET'])
 def dummyData(request) :
-    seeder = Seed.seeder(locale)
+    fake = Faker()
+    seeder = Seed.seeder('ko_KR')
 
-    seeder.add_entity(get_user_model(), 50)
-    seeder.add_entity(Review, 100)
+    print(fake.name())
+    print(fake.email())
+    print(seeder.faker.password())
+    for i in range(100) :
+        get_user_model().objects.create(
+            username = fake.name(),
+            email =fake.email(),
+            password =seeder.faker.password(),
+        )
+    print("체크1")
 
-    inserted_pks= seeder.execute()
-    return Response(inserted_pks)
+
+    movie_all = Movie.objects.all().order_by("?")[:10]
+    user_all = get_user_model().objects.all()[:100]
+
+
+    print(random.choice(movie_all))
+    print(random.choice(user_all))
+    for i in range(100) :
+        Review.objects.create(
+            title =f'{i}번째 글제목',
+            liked = True,
+            content= f'{i}번째 글의 글내용',
+            movie= random.choice(movie_all),
+            user= user_all[i]
+        )
+    
+    print("실행2")
+
+    reviews = Review.objects.all()
+
+    for i in range(300) :
+        Comment.objects.create(
+            user = random.choice(user_all),
+            review = random.choice(reviews),
+            content = f"{i}번째 댓글내용"
+        )
+
+    return Response("됩니다")
 
 
 
